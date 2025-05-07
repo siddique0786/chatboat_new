@@ -1,0 +1,19 @@
+[
+    {
+        "service family name": "Infra Services",
+        "service_family_id": "3",
+        "service name": "Docker",
+        "service_id": "18",
+        "subservice name": "Create Docker with Pipeline",
+        "servicesubcategory_id": "32",
+        "has_subservices": false,
+        "fields_information": {
+            "name": "Create Docker with Pipeline",
+            "description": "",
+            "service_name": "Docker",
+            "service_provider": "In2IT",
+            "status": "production",
+            "request_type": "service_request"
+        }
+    }
+]

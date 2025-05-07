@@ -1,0 +1,52 @@
+langchain-google-genai
+langchain
+langchain-core
+langchain-community
+faiss-cpu
+pypdf
+python-dotenv
+openai
+langchain-openai
+pandas
+openpyxl
+protoc-gen-openapiv2
+langchain-experimental
+tabulate
+Flask
+botbuilder-integration-aiohttp
+sentence-transformers
+psycopg2
+html2text
+gunicorn
+
+
+
+
+
+
+
+
+
+
+
+
+
+# langchain-google-genai==2.1.4
+# langchain==0.3.11
+# langchain-core==0.3.24
+# langchain-community==0.3.11
+# faiss-cpu
+# pypdf==5.1.0
+# python-dotenv==1.0.1
+# openai==1.57.2
+# langchain-openai==0.2.12
+# pandas==2.2.3
+# openpyxl==3.1.5
+# protoc-gen-openapiv2==0.0.1
+# langchain-experimental==0.3.3
+# tabulate==0.9.0
+# Flask==3.1.0
+# botbuilder-integration-aiohttp>=4.15.0
+# sentence-transformers==3.3.1
+# psycopg2
+# html2text

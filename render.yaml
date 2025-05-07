@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: webpage-qa-app
+    env: python
+    buildCommand: ""pip install -r requirements.txt""
+    startCommand: "app.py --server.port $PORT --server.enableCORS false"
+    plan: free
+    envVars:
+      - key: GOOGLE_API_KEY
+        value: "AIzaSyDkO_GY-5CExUJMJpFEPnfFSabaRkHabH8"

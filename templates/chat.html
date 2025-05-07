@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro-Serve Chatbot</title>
+  <style>
+    /* General Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #6dd5ed, #2193b0);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+    }
+
+    .chat-container {
+      background-color: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      max-width: 600px;
+      width: 100%;
+      height: 90%;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px 0;
+      color: #ffffff;
+      background: #007bff;
+      border-radius: 10px 10px 0 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .chatbox {
+      flex: 1;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .message {
+      display: flex;
+      margin-bottom: 15px;
+      align-items: flex-end;
+    }
+
+    .user-message {
+      background: #007bff;
+      color: #fff;
+      border-radius: 20px 20px 0 20px;
+      padding: 10px 15px;
+      max-width: 70%;
+      margin-left: auto;
+      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .bot-message {
+      background: #e0f7fa;
+      color: #333;
+      border-radius: 20px 20px 20px 0;
+      padding: 10px 15px;
+      max-width: 70%;
+      margin-right: auto;
+      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-input-container {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #f1f1f1;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      outline: none;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 12px 20px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 20px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .emojis {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .emoji {
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin: 0 5px;
+      transition: transform 0.3s;
+    }
+
+    .emoji:hover {
+      transform: scale(1.3);
+    }
+
+    .chatbox::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .chatbox::-webkit-scrollbar-thumb {
+      background-color: #007bff;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .chat-container {
+        width: 95%;
+        height: 90%;
+      }
+
+      input[type="text"] {
+        font-size: 14px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+
+    /* Hero Card Styles */
+    .hero-card {
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      max-width: 300px;
+      margin: 10px 0;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .hero-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .hero-card-content {
+      padding: 15px;
+    }
+
+    .hero-card-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .hero-card-subtitle {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .hero-card-buttons {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hero-card-buttons button {
+      flex: 1;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .hero-card-buttons button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">Co-Pilot</div>
+    <div class="chatbox" id="chatbox"></div>
+    <div class="chat-input-container">
+      <input type="text" id="userQuery" placeholder="Type your query here..." />
+      <button id="sendButton" onclick="sendMessage()">Send</button>
+    </div>
+    <div class="emojis">
+      <span class="emoji" onclick="addEmoji('😊')">😊</span>
+      <span class="emoji" onclick="addEmoji('😎')">😎</span>
+      <span class="emoji" onclick="addEmoji('😍')">😍</span>
+      <span class="emoji" onclick="addEmoji('🤣')">🤣</span>
+      <span class="emoji" onclick="addEmoji('😢')">😢</span>
+      <span class="emoji" onclick="addEmoji('🤔')">🤔</span>
+      <span class="emoji" onclick="addEmoji('👍')">👍</span>
+    </div>
+  </div>
+
+  <script>
+    function sendMessage() {
+      const userQueryInput = document.getElementById("userQuery");
+      const userQuery = userQueryInput.value.trim();
+      const sendButton = document.getElementById("sendButton");
+
+      if (userQuery !== "") {
+        displayUserMessage(userQuery);
+        sendButton.disabled = true;
+        userQueryInput.disabled = true;
+        processQuery(userQuery);
+        userQueryInput.value = "";
+      }
+    }
+
+    function displayUserMessage(message) {
+      const chatbox = document.getElementById("chatbox");
+      const userMessageDiv = document.createElement("div");
+      userMessageDiv.className = "message";
+
+      const userTextDiv = document.createElement("div");
+      userTextDiv.className = "user-message";
+      userTextDiv.textContent = message;
+
+      userMessageDiv.appendChild(userTextDiv);
+      chatbox.appendChild(userMessageDiv);
+
+      chatbox.scrollTo({ top: chatbox.scrollHeight, behavior: "smooth" });
+    }
+
+    function processQuery(query) {
+      fetch('/ask', {
+        method: 'POST',
+        body: new URLSearchParams({ query: query }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.card) {
+          displayHeroCard(data.card);
+        } else {
+          displayBotResponse(data.output);
+        }
+        document.getElementById("sendButton").disabled = false;
+        document.getElementById("userQuery").disabled = false;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred while sending your message. Please try again.");
+        document.getElementById("sendButton").disabled = false;
+        document.getElementById("userQuery").disabled = false;
+      });
+    }
+
+  function displayBotResponse(response) {
+    const chatbox = document.getElementById("chatbox");
+    const botMessageDiv = document.createElement("div");
+    botMessageDiv.className = "message";
+    
+    const botTextDiv = document.createElement("div");
+    botTextDiv.className = "bot-message";
+    
+    // If response is a list, render as clickable buttons
+    if (Array.isArray(response)) {
+      botTextDiv.textContent = "Please select a service:";
+    
+      const optionsContainer = document.createElement("div");
+      optionsContainer.style.marginTop = "10px";
+      optionsContainer.style.display = "flex";
+      optionsContainer.style.flexWrap = "wrap";
+      optionsContainer.style.gap = "8px";
+    
+      response.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = `${index + 1}. ${option}`;
+        button.style.backgroundColor = "#007bff";
+        button.style.color = "#fff";
+        button.style.border = "none";
+        button.style.padding = "8px 12px";
+        button.style.borderRadius = "10px";
+        button.style.cursor = "pointer";
+        button.style.fontSize = "0.85rem";
+        button.style.whiteSpace = "nowrap";
+      
+        button.onclick = () => {
+          displayUserMessage(option);
+          processQuery(option);
+        };
+      
+        optionsContainer.appendChild(button);
+      });
+    
+      botTextDiv.appendChild(optionsContainer);
+    } else {
+      // Default: plain text response
+      botTextDiv.textContent = response;
+    }
+  
+    botMessageDiv.appendChild(botTextDiv);
+    chatbox.appendChild(botMessageDiv);
+    chatbox.scrollTo({ top: chatbox.scrollHeight, behavior: "smooth" });
+  }
+
+
+    function displayHeroCard(data) {
+      const chatbox = document.getElementById("chatbox");
+      const botMessageDiv = document.createElement("div");
+      botMessageDiv.className = "message";
+
+      const cardDiv = document.createElement("div");
+      cardDiv.className = "hero-card";
+
+      if (data.imageUrl) {
+        const img = document.createElement("img");
+        img.src = data.imageUrl;
+        cardDiv.appendChild(img);
+      }
+
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "hero-card-content";
+
+      if (data.title) {
+        const title = document.createElement("div");
+        title.className = "hero-card-title";
+        title.textContent = data.title;
+        contentDiv.appendChild(title);
+      }
+
+      if (data.subtitle) {
+        const subtitle = document.createElement("div");
+        subtitle.className = "hero-card-subtitle";
+        subtitle.textContent = data.subtitle;
+        contentDiv.appendChild(subtitle);
+      }
+
+      if (data.text) {
+        const text = document.createElement("p");
+        text.textContent = data.text;
+        contentDiv.appendChild(text);
+      }
+
+      if (data.buttons && Array.isArray(data.buttons)) {
+        const buttonsDiv = document.createElement("div");
+        buttonsDiv.className = "hero-card-buttons";
+
+        data.buttons.forEach(btn => {
+          const button = document.createElement("button");
+          button.textContent = btn.title;
+          button.onclick = () => {
+            displayUserMessage(btn.title);
+            processQuery(btn.value);
+          };
+          buttonsDiv.appendChild(button);
+        });
+
+        contentDiv.appendChild(buttonsDiv);
+      }
+
+      cardDiv.appendChild(contentDiv);
+      botMessageDiv.appendChild(cardDiv);
+      chatbox.appendChild(botMessageDiv);
+
+      chatbox.scrollTo({ top: chatbox.scrollHeight, behavior: "smooth" });
+    }
+
+    document.getElementById("userQuery").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    function addEmoji(emoji) {
+      const userQueryInput = document.getElementById("userQuery");
+      userQueryInput.value += emoji;
+      userQueryInput.focus();
+    }
+  </script>
+</body>
+</html> 
