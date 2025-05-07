@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+import os
 from langchain.agents import AgentExecutor, create_tool_calling_agent, tool
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.memory import ConversationBufferMemory
@@ -1366,6 +1367,27 @@ def ask():
         return jsonify({"output": formatted_output})
     except Exception as e:
         return jsonify({"output": f"Error processing your request: {str(e)}"}), 500
+    
+
+TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
+TELEGRAM_API   = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
+
+@app.route('/telegram_webhook', methods=['POST'])
+def telegram_webhook():
+    data = request.get_json()
+    chat_id = data['message']['chat']['id']
+    text    = data['message']['text']
+
+    # Forward to your existing agent_executor
+    resp = agent_executor.invoke({'query': text})
+    answer = resp.get('output', "Oops, no answer.")
+
+    # Send back via Telegram sendMessage
+    request.post(f"{TELEGRAM_API}/sendMessage", json={
+      'chat_id': chat_id,
+      'text': answer
+    })
+    return ('', 200)    
 
 if __name__ == '__main__':
     app.run(debug=True)
